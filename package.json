@@ -30,6 +30,7 @@
     "dev": "vite build -w",
     "build": "vite build",
     "release": "release-it",
+    "prerelease": "pnpm run build",
     "preinstall": "npx only-allow pnpm",
     "update:deps": "pnpm update -i -r --latest",
     "lint": "tsc && eslint . --fix",

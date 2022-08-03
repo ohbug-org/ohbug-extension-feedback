@@ -1,7 +1,13 @@
 {
   "extends": "@chenyueban/tsconfig",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": [
+      "solid-js",
+      "solid-js/web"
+    ]
   },
   "include": [
     "src/**/*"

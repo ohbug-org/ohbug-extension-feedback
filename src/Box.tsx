@@ -1,6 +1,7 @@
 import type { Component } from 'solid-js'
 import { Show, createEffect, createSignal } from 'solid-js'
 import { getOhbugObject, getSelector } from '@ohbug/utils'
+import html2canvas from 'html2canvas'
 import Selector from './Selector'
 import { Close, Screen } from './assets'
 import { setStore, store } from './store'
@@ -19,23 +20,24 @@ const Box: Component = () => {
   async function handleFinish() {
     setLoading(true)
 
-    const event = { target: store.selectedElement } as Event
     let selector: string
     let outerHTML: string
     if (store.selectedElement) {
+      const event = { target: store.selectedElement } as unknown as Event
+      const canvas = await html2canvas(store.selectedElement)
+      const dataURL = canvas.toDataURL()
+
       selector = getSelector(event)
       outerHTML = store.selectedElement.outerHTML
+      const ohbug = getOhbugObject()
+      const ohbugClient = ohbug.client
+      const ohbugEvent = ohbugClient.createEvent({
+        category: 'feedback',
+        type: 'feedback',
+        detail: { selector, outerHTML, feedback: feedback(), dataURL },
+      })
+      await ohbugClient.notify(ohbugEvent)
     }
-
-    const ohbug = getOhbugObject()
-    const ohbugClient = ohbug.client
-    const ohbugEvent = ohbugClient.createEvent({
-      category: 'feedback',
-      type: 'feedback',
-      // @ts-expect-error fixed
-      detail: { selector, outerHTML, feedback: feedback() },
-    })
-    await ohbugClient.notify(ohbugEvent)
 
     // clear
     setVisible(false)
